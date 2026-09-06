@@ -1,9 +1,15 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { AuthService } from './auth.service.js';
 import { UserType } from '../users/type/user.type.js';
 import { CreateUserDto } from '../users/dto/create.user.dto.js';
 
-@Resolver()
+@Resolver(() => UserType)
 export class AuthResolver {
   constructor(private readonly service: AuthService) {}
 

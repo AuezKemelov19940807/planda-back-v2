@@ -1,8 +1,15 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { UsersService } from './users.service.js';
 import { UserType } from './type/user.type.js';
 
-@Resolver()
+@Resolver(() => UserType)
 export class UsersResolver {
   constructor(private readonly service: UsersService) {}
 
@@ -25,5 +32,13 @@ export class UsersResolver {
   @Query(() => UserType, { nullable: true })
   async user(@Args('email') email: string) {
     return this.service.findOne(email);
+  }
+  @ResolveField(() => String, { nullable: true })
+  avatar(@Parent() user: UserType) {
+    if (!user.avatar) {
+      return null;
+    }
+
+    return `${process.env.API_URL}/api/files/${user.avatar}`;
   }
 }
