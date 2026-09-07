@@ -8,6 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { UsersService } from './users.service.js';
 import { UserType } from './type/user.type.js';
+import { UpdateUserDto } from './dto/update.user.dto.js';
 
 @Resolver(() => UserType)
 export class UsersResolver {
@@ -30,9 +31,20 @@ export class UsersResolver {
   }
 
   @Query(() => UserType, { nullable: true })
-  async user(@Args('email') email: string) {
+  async getUser(@Args('email') email: string) {
     return this.service.findOne(email);
   }
+
+  @Mutation(() => UserType)
+  async updateUser(@Args('payload') payload: UpdateUserDto) {
+    return this.service.update(payload);
+  }
+
+  @Mutation(() => UserType)
+  async removeUser(@Args('id') id: string) {
+    return this.service.remove(id);
+  }
+
   @ResolveField(() => String, { nullable: true })
   avatar(@Parent() user: UserType) {
     if (!user.avatar) {

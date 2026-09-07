@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AuthType } from './type/auth.type.js';
 import { CreateUserDto } from '../users/dto/create.user.dto.js';
+import { GraphQLError } from 'graphql';
 @Injectable()
 export class AuthService {
   saltOrRounds: number = 10;
@@ -21,7 +22,11 @@ export class AuthService {
     const user = await this.usersService.findOne(email);
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new GraphQLError('Invalid email or password', {
+        extensions: {
+          code: 'UNAUTHORIZED',
+        },
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
