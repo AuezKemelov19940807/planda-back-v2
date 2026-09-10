@@ -88,4 +88,25 @@ export class UsersService {
       throw error;
     }
   }
+
+  async savePasswordResetCode(id: string, codeHash: string, expiresAt: Date) {
+    return prisma.user.update({
+      where: { id },
+      data: {
+        resetPasswordTokenHash: codeHash,
+        resetPasswordExpiresAt: expiresAt,
+      },
+    });
+  }
+
+  async updatePassword(id: string, password: string) {
+    return prisma.user.update({
+      where: { id },
+      data: {
+        password,
+        resetPasswordTokenHash: null,
+        resetPasswordExpiresAt: null,
+      },
+    });
+  }
 }

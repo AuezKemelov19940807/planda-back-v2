@@ -7,6 +7,7 @@ import { UsersService } from './users/users.service.js';
 import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { FilesModule } from './files/files.module.js';
+import { MailModule } from './mail/mail.module.js';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { FilesModule } from './files/files.module.js';
     UsersModule,
     AuthModule,
     FilesModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService, UsersService],

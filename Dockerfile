@@ -18,8 +18,8 @@ FROM base AS build
 
 # Install packages needed to build node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential node-gyp openssl pkg-config python-is-python3
-
+    apt-get install --no-install-recommends -y openssl && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 # Install node modules
 COPY package-lock.json package.json ./
 RUN npm ci --include=dev

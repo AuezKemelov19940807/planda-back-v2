@@ -1,9 +1,13 @@
 model User {
-    id        String   @id @default(uuid())
-    email     String   @unique
-    password  String
-    name      String?
-    avatar    String?
+    id       String  @id @default(uuid())
+    email    String  @unique
+    password String
+    name     String?
+    avatar   String?
+
+    resetPasswordTokenHash String?
+    resetPasswordExpiresAt DateTime?
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
