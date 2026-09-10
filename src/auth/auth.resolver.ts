@@ -1,18 +1,22 @@
-import {
-  Args,
-  Mutation,
-  Parent,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, Context, Query, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service.js';
 import { UserType } from '../users/type/user.type.js';
 import { CreateUserDto } from '../users/dto/create.user.dto.js';
 import { MessageType } from './type/message.type.js';
+import { UseGuards } from '@nestjs/common';
+import type { GraphQLContext } from './type/graphql-context.js';
+
+import { GqlAuthGuard } from './gql-auth.guard.js';
 
 @Resolver(() => UserType)
 export class AuthResolver {
   constructor(private readonly service: AuthService) {}
+
+  @Query(() => UserType)
+  @UseGuards(GqlAuthGuard)
+  me(@Context() context: GraphQLContext) {
+    return this.service.me(context.req.user!.sub);
+  }
 
   @Mutation(() => UserType)
   async signUp(@Args('payload') payload: CreateUserDto) {
@@ -23,8 +27,17 @@ export class AuthResolver {
   async signIn(
     @Args('email') email: string,
     @Args('password') password: string,
+    @Context() context: GraphQLContext,
   ) {
-    return this.service.signIn(email, password);
+    const result = await this.service.signIn(email, password);
+
+    context.res.cookie('access_token', result.access_token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+    });
+
+    return result;
   }
 
   @Mutation(() => MessageType)
@@ -44,5 +57,11 @@ export class AuthResolver {
     @Args('newPassword') newPassword: string,
   ) {
     return this.service.resetPassword(email, code, newPassword);
+  }
+
+  @Mutation(() => Boolean)
+  logOut(@Context() context: GraphQLContext) {
+    context.res.clearCookie('access_token');
+    return true;
   }
 }

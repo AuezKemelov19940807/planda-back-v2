@@ -17,6 +17,11 @@ import { MailModule } from './mail/mail.module.js';
       sortSchema: true,
       graphiql: true,
       introspection: true,
+
+      context: ({ req, res }: { req: Request; res: Response }) => ({
+        req,
+        res,
+      }),
     }),
     UsersModule,
     AuthModule,

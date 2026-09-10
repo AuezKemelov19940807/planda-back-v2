@@ -121,4 +121,18 @@ export class AuthService {
       message: 'Password successfully changed',
     };
   }
+
+  async logOut() {
+    return true;
+  }
+
+  async me(userId: string) {
+    const user = await this.usersService.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
 }
