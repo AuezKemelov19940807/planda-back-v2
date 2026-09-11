@@ -12,6 +12,7 @@ import { CreateUserDto } from '../users/dto/create.user.dto.js';
 import { GraphQLError } from 'graphql';
 import * as crypto from 'node:crypto';
 import { MailService } from '../mail/mail.service.js';
+import { GoogleAuthService } from './google-auth.service.js';
 @Injectable()
 export class AuthService {
   saltOrRounds: number = 10;
@@ -19,6 +20,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private readonly mailService: MailService,
+    private readonly googleAuthService: GoogleAuthService,
   ) {}
 
   async signUp(payload: CreateUserDto) {
@@ -29,7 +31,7 @@ export class AuthService {
   async signIn(email: string, password: string): Promise<AuthType> {
     const user = await this.usersService.findOne(email);
 
-    if (!user) {
+    if (!user || !user.password) {
       throw new GraphQLError('Invalid email or password', {
         extensions: {
           code: 'UNAUTHORIZED',
@@ -134,5 +136,21 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async googleSignIn(credential: string): Promise<AuthType> {
+    const user = await this.googleAuthService.verifyCredential(credential);
+
+    const payload = {
+      sub: user.id,
+      username: user.email,
+    };
+
+    const access_token = await this.jwtService.signAsync(payload);
+
+    return {
+      ...user,
+      access_token,
+    };
   }
 }

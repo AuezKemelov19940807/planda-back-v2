@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-
+import { GoogleAuthService } from './google-auth.service.js';
 import { AuthService } from './auth.service.js';
 import { UsersModule } from '../users/users.module.js';
 import { jwtConstants } from './constants.js';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthResolver } from './auth.resolver.js';
 import { MailModule } from '../mail/mail.module.js';
+import { GqlAuthGuard } from './gql-auth.guard.js';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { MailModule } from '../mail/mail.module.js';
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  providers: [AuthService, AuthResolver],
+  providers: [AuthService, AuthResolver, GoogleAuthService, GqlAuthGuard],
   controllers: [],
   exports: [AuthService],
 })

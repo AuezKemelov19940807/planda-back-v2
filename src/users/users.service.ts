@@ -117,4 +117,37 @@ export class UsersService {
       },
     });
   }
+
+  async createGoogleUser(data: {
+    email: string;
+    name?: string | null;
+    avatar?: string | null;
+    googleId: string;
+  }) {
+    return prisma.user.create({
+      data: {
+        email: data.email,
+        password: null,
+        name: data.name,
+        avatar: data.avatar,
+        googleId: data.googleId,
+      },
+    });
+  }
+
+  async connectGoogleAccount(
+    id: string,
+    googleId: string,
+    name?: string | null,
+    avatar?: string | null,
+  ) {
+    return prisma.user.update({
+      where: { id },
+      data: {
+        googleId,
+        name,
+        avatar,
+      },
+    });
+  }
 }

@@ -40,6 +40,22 @@ export class AuthResolver {
     return result;
   }
 
+  @Mutation(() => UserType)
+  async googleSignIn(
+    @Args('credential') credential: string,
+    @Context() context: GraphQLContext,
+  ) {
+    const result = await this.service.googleSignIn(credential);
+
+    context.res.cookie('access_token', result.access_token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+    });
+
+    return result;
+  }
+
   @Mutation(() => MessageType)
   forgotPassword(@Args('email') email: string) {
     return this.service.forgotPassword(email);
